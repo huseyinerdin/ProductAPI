@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using ProductAPI.API.Middlewares;
 using ProductAPI.Application;
+using ProductAPI.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext?.Database?.Migrate();
+}
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
